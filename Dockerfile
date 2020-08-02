@@ -1,10 +1,16 @@
 FROM python:3.8-alpine
+
 WORKDIR /code
+
 ENV FLASK_APP app.py
 ENV FLASK_RUN_HOST 0.0.0.0
-COPY requirements.txt requirements.txt
-RUN apk add --no-cache gcc musl-dev linux-headers && \
-    pip install -r requirements.txt 
-EXPOSE 5000
+
 COPY . .
+
+RUN apk add --no-cache --virtual build-deps gcc musl-dev linux-headers && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apk del build-deps
+
+EXPOSE 5000
+
 CMD ["flask", "run"]
